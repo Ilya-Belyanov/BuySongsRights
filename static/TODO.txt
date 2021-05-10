@@ -1,0 +1,9 @@
+def TODO
+Server to MusicMan shop (sale of songs) with MySQL DB:
+    1) DataBase MusicMan;
+    2) Tables:
+        a) users (id, name, email, is_staff);
+        b) songs (id, name); 
+        c) tags (id, name);
+    3) Server of shop;
+    4) Client;

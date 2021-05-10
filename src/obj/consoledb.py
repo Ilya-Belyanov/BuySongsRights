@@ -1,6 +1,7 @@
 import json
+import os
 
-from pymysql_adapter import PyMySQLAdapter
+from src.obj.pymysql_adapter import PyMySQLAdapter
 
 
 class ConsoleDB:
@@ -28,7 +29,8 @@ class ConsoleDB:
                      }
 
     def __init__(self):
-        with open("config.txt") as f:
+        confDir = os.getcwd() + "\\data\\"
+        with open(confDir + "config.txt") as f:
             config = json.load(f)
         self.dataBase = PyMySQLAdapter(config)
         print("Connect Successful!!!")
@@ -67,7 +69,7 @@ class ConsoleDB:
             if command == "!exit":
                 break
             answer = function(self.dataBase, command)
-            print(answer if answer else "Not such table", end="\n\n")
+            print(answer if answer else "Not such table or table is empty", end="\n\n")
 
     def renameTable(self):
         tbl = input("Input name of table or !exit: ")
