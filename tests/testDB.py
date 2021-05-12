@@ -20,8 +20,17 @@ class TestCaseDB(unittest.TestCase):
         for table in tables:
             self.assertEqual(table in dbTables, True)
 
+
+class TestCaseUsers(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        confDir = os.getcwd().replace("tests", "data\\")
+        with open(confDir + "config.txt") as f:
+            config = json.load(f)
+        self.dataBase = PyMySQLAdapter(config)
+
     def test_addUser(self):
-        user = {"name": "Алексей"}
+        user = {"name": "Гоша"}
         self.assertEqual(self.dataBase.intoTable("users", user), True)
 
     def test_deleteUser(self):
@@ -34,6 +43,16 @@ class TestCaseDB(unittest.TestCase):
 
     def test_truncateUser(self):
         self.dataBase.truncateTable("users")
+        self.dataBase.close()
+
+
+class TestCaseTags(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        confDir = os.getcwd().replace("tests", "data\\")
+        with open(confDir + "config.txt") as f:
+            config = json.load(f)
+        self.dataBase = PyMySQLAdapter(config)
 
     def test_addTags(self):
         tags = [{"name": "METAL"}, {"name": "PUNK"}, {"name": "HARD"}]
@@ -53,6 +72,69 @@ class TestCaseDB(unittest.TestCase):
 
     def test_truncateTags(self):
         self.dataBase.truncateTable("tags")
+        self.dataBase.close()
+
+
+class TestCaseStaff(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        confDir = os.getcwd().replace("tests", "data\\")
+        with open(confDir + "config.txt") as f:
+            config = json.load(f)
+        self.dataBase = PyMySQLAdapter(config)
+
+    def test_addStaffUser(self):
+        user = {"name": "Алексей"}
+        self.assertEqual(self.dataBase.intoTable("users", user), True)
+        staff = {"user_id": self.dataBase.getKeyLastElement("users")}
+        self.assertEqual(self.dataBase.intoTable("staff", staff), True)
+
+    def test_getStaffUser(self):
+        staff = self.dataBase.getTable("staff", ["users", "id", "user_id"])
+        self.assertEqual(staff[0]['name'], 'Алексей')
+
+    def test_truncateStaff(self):
+        self.dataBase.truncateTable("staff")
+        self.dataBase.truncateTable("users")
+        self.dataBase.close()
+
+
+class TestCaseSongTag(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        confDir = os.getcwd().replace("tests", "data\\")
+        with open(confDir + "config.txt") as f:
+            config = json.load(f)
+        self.dataBase = PyMySQLAdapter(config)
+
+    def test1_addSongUser(self):
+        user = {"name": "Алексей"}
+        self.assertEqual(self.dataBase.intoTable("users", user), True)
+        song = {"name": "Intro", "owner_id": self.dataBase.getKeyLastElement("users")}
+        self.assertEqual(self.dataBase.intoTable("songs", song), True)
+
+    def test2_addSongTag(self):
+        tags = [{"name": "METAL"}, {"name": "PUNK"}, {"name": "HARD"}]
+        for tag in tags:
+            self.assertEqual(self.dataBase.intoTable("tags", tag), True)
+        songtotag = {"song_id": self.dataBase.getKeyLastElement("songs"), "tag_name": "HARD"}
+        self.assertEqual(self.dataBase.intoTable("songtotag", songtotag), True)
+        songtotag = {"song_id": self.dataBase.getKeyLastElement("songs"), "tag_name": "PUNK"}
+        self.assertEqual(self.dataBase.intoTable("songtotag", songtotag), True)
+
+    def test3_getSongTag(self):
+        tags = self.dataBase.getTable("songtotag", ["songs", "id", "song_id"])
+        self.assertEqual(tags[0]['song_id'], 1)
+        self.assertEqual(tags[0]['tag_name'], 'HARD')
+        self.assertEqual(tags[1]['song_id'], 1)
+        self.assertEqual(tags[1]['tag_name'], 'PUNK')
+
+    def test4_truncateSongTag(self):
+        self.dataBase.truncateTable("tags")
+        self.dataBase.truncateTable("songs")
+        self.dataBase.truncateTable("users")
+        self.dataBase.truncateTable("songtotag")
+        self.dataBase.close()
 
 
 if __name__ == '__main__':

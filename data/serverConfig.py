@@ -1,0 +1,7 @@
+
+class ServerConfig:
+    IP = "127.0.0.1"
+    PORT = 7777
+    CODE = 'utf-8'
+    BLOCK_LENGTH = 512
+

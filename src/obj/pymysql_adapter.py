@@ -25,8 +25,14 @@ class PyMySQLAdapter:
             cursor.execute("SHOW TABLES")
             return [row[f"Tables_in_{self.config['db'].lower()}"] for row in cursor]
 
-    def getTable(self, tbl: str) -> list:
-        return self.tableRequest(tbl, "SELECT * FROM")
+    def getTable(self, tbl: str, innerJoin=None) -> list:
+        if innerJoin is None:
+            innerJoin = []
+        if len(innerJoin) != 0:
+            sql = f"INNER JOIN {innerJoin[0]} ON {innerJoin[0]}.{innerJoin[1]} = {tbl}.{innerJoin[2]}"
+        else:
+            sql = ""
+        return self.tableRequest(tbl, "SELECT * FROM",  sql)
 
     def getColumns(self, tbl: str) -> list:
         return self.tableRequest(tbl, "SHOW COLUMNS FROM")
@@ -39,11 +45,17 @@ class PyMySQLAdapter:
         answer = self.tableRequest(tbl, "SHOW CREATE TABLE")
         return answer[0] if answer is not None else None
 
+    def getKeyLastElement(self, tbl: str, id: str = "id"):
+        with self.connection.cursor() as cursor:
+            sql = f"SELECT {id} FROM {tbl} ORDER BY {id} DESC LIMIT 1"
+            cursor.execute(sql)
+            return [row[id] for row in cursor][0]
+
     @checkInputTable
     def intoTable(self, tbl: str, data: dict) -> bool:
         with self.connection.cursor() as cursor:
             fields = ','.join([key.lower() for key in data.keys()])
-            args = ','.join(["'" + data[key] + "'" for key in data.keys()])
+            args = ','.join([self.fieldArg(data[key]) for key in data.keys()])
             sql = f"INSERT INTO {tbl} ({fields}) VALUES ({args})"
             try:
                 cursor.execute(sql)
@@ -52,6 +64,13 @@ class PyMySQLAdapter:
             except Exception as e:
                 print(e)
                 return False
+
+    @staticmethod
+    def fieldArg(arg):
+        if isinstance(arg, int):
+            return str(arg)
+        elif isinstance(arg, str):
+            return "'" + arg + "'"
 
     @checkInputTable
     def deleteFromTable(self, tbl: str, where: str = ""):
@@ -73,9 +92,9 @@ class PyMySQLAdapter:
             self.connection.commit()
 
     @checkInputTable
-    def tableRequest(self, tbl: str, command: str) -> list:
+    def tableRequest(self, tbl: str, command: str, postCommand: str = "") -> list:
         with self.connection.cursor() as cursor:
-            cursor.execute(f"{command} {tbl}")
+            cursor.execute(f"{command} {tbl} {postCommand}")
             return [row for row in cursor]
 
     @checkInputTable
