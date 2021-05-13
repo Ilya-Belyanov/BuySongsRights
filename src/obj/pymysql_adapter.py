@@ -25,13 +25,15 @@ class PyMySQLAdapter:
             cursor.execute("SHOW TABLES")
             return [row[f"Tables_in_{self.config['db'].lower()}"] for row in cursor]
 
-    def getTable(self, tbl: str, innerJoin=None) -> list:
+    def getTable(self, tbl: str, innerJoin=None, where: str = "") -> list:
         if innerJoin is None:
             innerJoin = []
         if len(innerJoin) != 0:
             sql = f"INNER JOIN {innerJoin[0]} ON {innerJoin[0]}.{innerJoin[1]} = {tbl}.{innerJoin[2]}"
         else:
             sql = ""
+        whr = f"WHERE {where}" if where else ""
+        sql += whr
         return self.tableRequest(tbl, "SELECT * FROM",  sql)
 
     def getColumns(self, tbl: str) -> list:

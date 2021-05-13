@@ -30,7 +30,7 @@ class TestCaseUsers(unittest.TestCase):
         self.dataBase = PyMySQLAdapter(config)
 
     def test_addUser(self):
-        user = {"name": "Гоша"}
+        user = {"name": "Гоша", "password": "Aloha"}
         self.assertEqual(self.dataBase.intoTable("users", user), True)
 
     def test_deleteUser(self):
@@ -84,10 +84,16 @@ class TestCaseStaff(unittest.TestCase):
         self.dataBase = PyMySQLAdapter(config)
 
     def test_addStaffUser(self):
-        user = {"name": "Алексей"}
+        user = {"name": "Алексей", "password": "Aloha"}
         self.assertEqual(self.dataBase.intoTable("users", user), True)
         staff = {"user_id": self.dataBase.getKeyLastElement("users")}
         self.assertEqual(self.dataBase.intoTable("staff", staff), True)
+
+        user = {"name": "Максим", "password": "Aloha"}
+        self.assertEqual(self.dataBase.intoTable("users", user), True)
+        staff = {"user_id": self.dataBase.getKeyLastElement("users")}
+        self.assertEqual(self.dataBase.intoTable("staff", staff), True)
+        self.assertEqual(self.dataBase.intoTable("staff", staff), False)
 
     def test_getStaffUser(self):
         staff = self.dataBase.getTable("staff", ["users", "id", "user_id"])
