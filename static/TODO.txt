@@ -6,7 +6,7 @@ Server to MusicMan shop (sale of songs) with MySQL DB:
         b) songs (id, name); 
         c) tags (id, name);
     3) Server of shop:
-	a) Register;
+	a) Register and Auth;
 	b) Change password;
 	c) Show All songs list;
 	d) Show all buying songs;

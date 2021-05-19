@@ -114,7 +114,7 @@ class TestCaseSongTag(unittest.TestCase):
         self.dataBase = PyMySQLAdapter(config)
 
     def test1_addSongUser(self):
-        user = {"name": "Алексей"}
+        user = {"name": "Алексей", "password": "Aloha"}
         self.assertEqual(self.dataBase.intoTable("users", user), True)
         song = {"name": "Intro", "owner_id": self.dataBase.getKeyLastElement("users")}
         self.assertEqual(self.dataBase.intoTable("songs", song), True)

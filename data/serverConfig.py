@@ -11,9 +11,21 @@ class ServerTypes:
     SUCCESS_REG = 1
     SUCCESS_AUTH = 2
     ERR_REG_AUTH = 3
+    ALL_SONGS = 4
+    ADD_SONG = 5
+    ALL_TAGS = 6
+    USER_SONGS = 7
+    USER_BUYING_SONGS = 8
+    USER_BUY_SONG = 9
 
 
-class ServerPacketKeyWords:
+class ServerPacketKey:
     TYPE = "type"
     MESSAGE = "message"
+    ERROR = "error"
     ID = "id"
+    IS_STAFF = "is_staff"
+    SONGS = "songs"
+    AUTHORS = "authors"
+    RESULT = "result"
+    TAGS = "tags"

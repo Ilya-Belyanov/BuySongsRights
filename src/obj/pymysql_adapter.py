@@ -29,10 +29,10 @@ class PyMySQLAdapter:
         if innerJoin is None:
             innerJoin = []
         if len(innerJoin) != 0:
-            sql = f"INNER JOIN {innerJoin[0]} ON {innerJoin[0]}.{innerJoin[1]} = {tbl}.{innerJoin[2]}"
+            sql = f" INNER JOIN {innerJoin[0]} ON {innerJoin[0]}.{innerJoin[1]} = {tbl}.{innerJoin[2]}"
         else:
             sql = ""
-        whr = f"WHERE {where}" if where else ""
+        whr = f" WHERE {where}" if where else ""
         sql += whr
         return self.tableRequest(tbl, "SELECT * FROM",  sql)
 
